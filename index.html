@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shareholder Dashboard</title>
+  <style>
+    /* CSS styles */
+    .container {
+      text-align: center;
+      margin-top: 50px;
+    }
+    .graph-container {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Shareholder Dashboard</h1>
+    <div class="graph-container">
+      <canvas id="shareholder-graph" width="400" height="200"></canvas>
+    </div>
+    <div id="shareholder-info"></div>
+  </div>
+
+  <script>
+    // JavaScript code
+    // Generate random percentages for 7 shareholders with person number 1 having at least 30%
+    function generateRandomPercentages() {
+      const minPercentage = 30;
+      const maxPercentage = 100;
+      const numShareholders = 7;
+
+      // Generate random percentages
+      let percentages = [];
+      let total = 0;
+      for (let i = 0; i < numShareholders; i++) {
+        let percentage;
+        if (i === 0) {
+          percentage = Math.floor(Math.random() * (maxPercentage - minPercentage + 1)) + minPercentage;
+        } else {
+          percentage = Math.floor(Math.random() * (maxPercentage - minPercentage + 1));
+        }
+        percentages.push(percentage);
+        total += percentage;
+      }
+
+      // Adjust percentages to ensure the total equals 100%
+      const diff = 100 - total;
+      percentages[0] += diff;
+
+      return percentages;
+    }
+
+    // Update the graph with new percentages
+    function updateGraph(percentages) {
+      const canvas = document.getElementById('shareholder-graph');
+      const ctx = canvas.getContext('2d');
+
+      // Clear previous drawings
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw new graph
+      const barWidth = canvas.width / percentages.length;
+      const maxHeight = canvas.height;
+      const colors = ['#ff5733', '#ffbd33', '#33ff77', '#33b5ff', '#8a33ff', '#ff33ea', '#33ffa1'];
+
+      for (let i = 0; i < percentages.length; i++) {
+        const barHeight = (percentages[i] / 100) * maxHeight;
+        ctx.fillStyle = colors[i];
+        ctx.fillRect(i * barWidth, maxHeight - barHeight, barWidth, barHeight);
+      }
+    }
+
+    // Display shareholder information
+    function displayShareholderInfo(percentages) {
+      const shareholderInfo = document.getElementById('shareholder-info');
+      let infoHTML = '<h3>Shareholder Information</h3>';
+      for (let i = 0; i < percentages.length; i++) {
+        infoHTML += `<p>Person ${i + 1}: ${percentages[i]}%</p>`;
+      }
+      shareholderInfo.innerHTML = infoHTML;
+    }
+
+    // Initial graph and shareholder info display
+    const initialPercentages = generateRandomPercentages();
+    updateGraph(initialPercentages);
+    displayShareholderInfo(initialPercentages);
+
+    // Update the graph and shareholder info periodically
+    setInterval(() => {
+      const newPercentages = generateRandomPercentages();
+      updateGraph(newPercentages);
+      displayShareholderInfo(newPercentages);
+    }, 5000); // Update every 5 seconds
+  </script>
+</body>
+</html>
